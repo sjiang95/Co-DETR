@@ -51,6 +51,7 @@ from timm.models._manipulate import named_apply, checkpoint_seq, adapt_input_con
 from timm.models._registry import generate_default_cfgs, register_model, register_model_deprecations
 
 from ..builder import BACKBONES
+from mmcv.runner import BaseModule, ModuleList, _load_checkpoint
 
 __all__ = ['VisionTransformer']  # model_registry will add each entrypoint fn to this
 
@@ -415,7 +416,7 @@ def global_pool_nlc(
 
 
 @BACKBONES.register_module()
-class VisionTransformer(nn.Module):
+class VisionTransformer(BaseModule):
     """ Vision Transformer
 
     A PyTorch impl of : `An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale`
