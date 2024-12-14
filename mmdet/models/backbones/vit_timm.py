@@ -87,7 +87,9 @@ class Attention(nn.Module):
         self.proj_drop = nn.Dropout(proj_drop)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        B, N, C = x.shape
+        B, H, W, C = x.shape
+        x = x.view(B, -1, C)
+        N = H * W
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, self.head_dim).permute(2, 0, 3, 1, 4)
         q, k, v = qkv.unbind(0)
         q, k = self.q_norm(q), self.k_norm(k)
@@ -107,6 +109,7 @@ class Attention(nn.Module):
         x = x.transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
+        x = x.view(B, H, W, C)
         return x
 
 
@@ -702,6 +705,8 @@ class VisionTransformer(BaseModule):
             if to_cat:
                 x = torch.cat(to_cat + [x], dim=1)
             x = x + pos_embed
+        if self.dynamic_img_size:
+            x = x.view(B, H, W, C)
 
         return self.pos_drop(x)
 
@@ -815,7 +820,7 @@ class VisionTransformer(BaseModule):
             x = checkpoint_seq(self.blocks, x)
         else:
             x = self.blocks(x)
-        x = self.norm(x)
+        x = self.norm(x).permute(0, 3, 1, 2).contiguous()
         return x
 
     def pool(self, x: torch.Tensor, pool_type: Optional[str] = None) -> torch.Tensor:

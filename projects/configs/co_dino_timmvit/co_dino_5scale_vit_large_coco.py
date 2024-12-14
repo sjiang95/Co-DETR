@@ -30,6 +30,7 @@ model = dict(
         depth=24,
         num_heads=16,
         mlp_ratio=4,
+        class_token=False,
         dynamic_img_size=True,
         drop_path_rate=0.4,
         # window_size=24,
