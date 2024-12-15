@@ -17,3 +17,8 @@ model = dict(
         in_channels=[192],
     ),
 )
+
+data = dict(
+    samples_per_gpu=1, # use 16 gpus for batchsize=16
+    workers_per_gpu=1,
+)

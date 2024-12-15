@@ -122,7 +122,7 @@ class SFP(BaseModule):
     @auto_fp16()
     def forward(self, inputs):
         """Forward function."""
-        x = inputs[0]
+        x = inputs#[0]
         p4 = self.p4(x)
         p3 = self.p3(x)
         p5 = self.p5(x)
