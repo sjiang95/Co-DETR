@@ -3,16 +3,6 @@ checkpoint_config = dict(interval=1)
 resume_from = None
 load_from = None
 pretrained = None
-window_block_indexes = (
-    list(range(0, 3))
-    + list(range(4, 7))
-    + list(range(8, 11))
-    + list(range(12, 15))
-    + list(range(16, 19))
-    + list(range(20, 23))
-    + list(range(24, 27))
-)
-residual_block_indexes = []
 
 num_dec_layer = 6
 lambda_2 = 2.0
@@ -33,9 +23,6 @@ model = dict(
         class_token=False,
         dynamic_img_size=True,
         drop_path_rate=0.4,
-        # window_size=24,
-        # window_block_indexes=window_block_indexes,
-        # residual_block_indexes=residual_block_indexes,
         qkv_bias=True,
         # use_act_checkpoint=True,
         # init_cfg=None
