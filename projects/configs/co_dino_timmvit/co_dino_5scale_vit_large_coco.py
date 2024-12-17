@@ -33,7 +33,7 @@ model = dict(
         out_channels=256,
         num_outs=5,
         use_p2=True,
-        use_act_checkpoint=False,
+        use_act_checkpoint=True,
     ),
     rpn_head=dict(
         type="RPNHead",
