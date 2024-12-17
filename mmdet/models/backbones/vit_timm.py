@@ -51,7 +51,7 @@ from timm.models._manipulate import named_apply, checkpoint_seq, adapt_input_con
 from timm.models._registry import generate_default_cfgs, register_model, register_model_deprecations
 
 from ..builder import BACKBONES
-from mmcv.runner import BaseModule, ModuleList, _load_checkpoint
+from mmcv.runner import BaseModule, ModuleList, _load_checkpoint, auto_fp16
 
 __all__ = ['VisionTransformer']  # model_registry will add each entrypoint fn to this
 
@@ -837,6 +837,7 @@ class VisionTransformer(BaseModule):
         x = self.head_drop(x)
         return x if pre_logits else self.head(x)
 
+    @auto_fp16()
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.forward_features(x)
         x = self.forward_head(x)
