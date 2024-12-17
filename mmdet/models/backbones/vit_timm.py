@@ -463,6 +463,7 @@ class VisionTransformer(BaseModule):
             act_layer: Optional[LayerType] = None,
             block_fn: Type[nn.Module] = Block,
             mlp_layer: Type[nn.Module] = Mlp,
+            with_cp: bool = False, # use 
     ) -> None:
         """
         Args:
@@ -585,6 +586,9 @@ class VisionTransformer(BaseModule):
             self.init_weights(weight_init)
         if fix_init:
             self.fix_init_weight()
+
+        if with_cp:
+            self.set_grad_checkpointing()
 
     def fix_init_weight(self):
         def rescale(param, _layer_id):

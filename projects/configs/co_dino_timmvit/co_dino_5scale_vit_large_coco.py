@@ -24,7 +24,7 @@ model = dict(
         dynamic_img_size=True,
         drop_path_rate=0.4,
         qkv_bias=True,
-        # use_act_checkpoint=True,
+        with_cp=True,
         # init_cfg=None
     ),
     neck=dict(
@@ -479,3 +479,6 @@ optimizer = dict(
 custom_hooks = [
     dict(type="ExpMomentumEMAHook", momentum=0.0001, priority=49),
 ]
+
+
+# fp16 = dict(loss_scale='dynamic')
