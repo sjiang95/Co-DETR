@@ -463,7 +463,7 @@ class VisionTransformer(BaseModule):
             act_layer: Optional[LayerType] = None,
             block_fn: Type[nn.Module] = Block,
             mlp_layer: Type[nn.Module] = Mlp,
-            with_cp: bool = False, # use 
+            with_cp: bool = False, # use `torch.utils.checkpoint` to save GPU memory
     ) -> None:
         """
         Args:
