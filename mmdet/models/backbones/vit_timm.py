@@ -45,6 +45,7 @@ from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCE
 from timm.layers import PatchEmbed, Mlp, DropPath, AttentionPoolLatent, RmsNorm, PatchDropout, SwiGLUPacked, \
     trunc_normal_, lecun_normal_, resample_patch_embed, resample_abs_pos_embed, use_fused_attn, \
     get_act_layer, get_norm_layer, LayerType
+from timm.layers.pos_embed_sincos import build_sincos2d_pos_embed
 from timm.models._builder import build_model_with_cfg
 from timm.models._features import feature_take_indices
 from timm.models._manipulate import named_apply, checkpoint_seq, adapt_input_conv
@@ -464,6 +465,7 @@ class VisionTransformer(BaseModule):
             block_fn: Type[nn.Module] = Block,
             mlp_layer: Type[nn.Module] = Mlp,
             with_cp: bool = False, # use `torch.utils.checkpoint` to save GPU memory
+            init_cfg=None,
     ) -> None:
         """
         Args:
@@ -498,7 +500,7 @@ class VisionTransformer(BaseModule):
         super().__init__()
         assert global_pool in ('', 'avg', 'avgmax', 'max', 'token', 'map')
         assert class_token or global_pool != 'token'
-        assert pos_embed in ('', 'none', 'learn')
+        assert pos_embed in ('', 'none', 'learn', 'sincos')
         use_fc_norm = global_pool in ('avg', 'avgmax', 'max') if fc_norm is None else fc_norm
         norm_layer = get_norm_layer(norm_layer) or partial(nn.LayerNorm, eps=1e-6)
         act_layer = get_act_layer(act_layer) or nn.GELU
@@ -535,6 +537,11 @@ class VisionTransformer(BaseModule):
         embed_len = num_patches if no_embed_class else num_patches + self.num_prefix_tokens
         if not pos_embed or pos_embed == 'none':
             self.pos_embed = None
+        elif pos_embed == "sincos":  # fixed sin-cos pos_embed
+            self.pos_embed = nn.Parameter(
+                build_sincos2d_pos_embed(self.patch_embed.grid_size, embed_dim),
+                requires_grad=False,
+            )
         else:
             self.pos_embed = nn.Parameter(torch.randn(1, embed_len, embed_dim) * .02)
         self.pos_drop = nn.Dropout(p=pos_drop_rate)
@@ -1198,4 +1205,3 @@ def checkpoint_filter_fn(
             continue
         out_dict[k] = v
     return out_dict
-

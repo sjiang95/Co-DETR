@@ -21,6 +21,7 @@ model = dict(
         num_heads=16,
         mlp_ratio=4,
         class_token=False,
+        pos_embed="sincos",
         dynamic_img_size=True,
         drop_path_rate=0.4,
         qkv_bias=True,
